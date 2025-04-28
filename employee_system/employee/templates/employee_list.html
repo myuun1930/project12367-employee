@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Employees</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #1e1e2f;
+            color: #f5f5f5;
+        }
+    
+        .navbar-custom {
+            background: linear-gradient(to right, #0066cc, #3399ff);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+    
+        .navbar-search-input {
+            border-radius: 20px;
+            padding-left: 15px;
+        }
+    
+        .navbar-search-button {
+            border-radius: 20px;
+            padding: 5px 15px;
+        }
+    
+        h2 {
+            font-weight: 500;
+            color: #ffffff;
+        }
+    
+        .table {
+            background-color: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            color: #000;
+        }
+    
+        .table th,
+        .table td {
+            vertical-align: middle;
+            text-align: center;
+        }
+    
+        .table thead {
+            background-color: #dbeeff;
+        }
+    
+        .btn-custom {
+            border-radius: 20px;
+        }
+    
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+    
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+    
+        .page-link {
+            border-radius: 10px !important;
+            background-color: #2a2a3d;
+            color: #f5f5f5;
+            border: none;
+        }
+    
+        .page-link:hover {
+            background-color: #3c3c5a;
+        }
+    
+        .nav-link {
+            color: #fff !important;
+        }
+    
+        .nav-link.active {
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-light navbar-custom">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'add_employee' %}">บันทึกข้อมูลพนักงาน</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'search_employee' %}">ค้นหารายชื่อพนักงาน</a>
+                    </li>
+                </ul>
+
+                <form method="GET" action="{% url 'search_employee' %}" class="d-flex ms-auto">
+                    <input class="form-control me-2 navbar-search-input" type="search" placeholder="ค้นหาตามชื่อหรือตำแหน่ง" aria-label="Search" name="search">
+                    <button class="btn btn-outline-light navbar-search-button" type="submit">
+                        <i class="bi bi-search"></i> ค้นหา
+                    </button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4 fade-in">
+        <h2 class="text-center mb-4">ระบบจัดการรายชื่อพนักงาน</h2>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover shadow-sm">
+                <thead class="table-primary">
+                    <tr>
+                        <th>ลำดับ</th>
+                        <th>ชื่อ-นามสกุล</th>
+                        <th>ตำแหน่ง</th>
+                        <th>เงินเดือน</th>
+                        <th>เบอร์โทร</th>
+                        <th>แก้ไข / ลบ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if employees %}
+                        {% for employee in employees %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ employee.first_name }} {{ employee.last_name }}</td>
+                                <td>{{ employee.position }}</td>
+                                <td>{{ employee.salary }}</td>
+                                <td>{{ employee.phone_number }}</td>
+                                <td>
+                                    <a href="{% url 'edit_employee' employee.pk %}" class="btn btn-warning btn-sm btn-custom"><i class="bi bi-pencil-square"></i> แก้ไข</a>
+                                    <a href="{% url 'delete_employee' employee.pk %}" class="btn btn-danger btn-sm btn-custom" 
+   onclick="return confirm('คุณต้องการลบพนักงานนี้หรือไม่?');">
+   <i class="bi bi-trash"></i> ลบ
+</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center">ไม่พบข้อมูลพนักงานที่ตรงกับคำค้นหา</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination-container">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
