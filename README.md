@@ -1,4 +1,5 @@
 # project12367-employee
 
 ระบบ
-(empy1.jpg)
+
+[หน้าเพิ่มชื่อ](empy1.jpg)
